@@ -8,7 +8,7 @@ import { useStoreListBreadcrumbs } from '@/stores'
 import { Avatar, Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react'
 import { googleLogout } from '@react-oauth/google'
 import { useRouter } from 'next/navigation'
-import { setCookie } from 'nookies'
+import { destroyCookie, parseCookies, setCookie } from 'nookies'
 import { useEffect, useState } from 'react'
 
 type TContentUser = {
@@ -23,17 +23,22 @@ const Header = () => {
   const [token, setToken] = useState<string>('')
 
   const [onFetching, setOnFetching] = useState(false)
-
+  const cookies = parseCookies()
   const router = useRouter()
 
+  const whitelist = [process.env.NEXT_PUBLIC_ACCESS_ACCOUNT as string, process.env.NEXT_PUBLIC_ACCESS_ACCOUNT_2 as string, process.env.NEXT_PUBLIC_ACCESS_ACCOUNT_3 as string]
   const handleFetchingUser = async () => {
     try {
       const dataUser: any = await instance.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`)
 
-      if (dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT || dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT1 || dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT2) {
+      if (!whitelist.includes(dataUser.email)) {
         ToastComponent({ message: 'You are not authorized', type: 'error' })
         localStorage.removeItem('access_token')
-        return router.push('/login')
+        //clear cookie
+        destroyCookie(null, 'access_token', { path: '/' })
+        router.push('/login')
+
+        return
       } else {
         setInfoUser(dataUser)
         localStorage.setItem('access_token', token)
@@ -46,6 +51,7 @@ const Header = () => {
     } catch (error) {
       if (error) {
         ToastComponent({ message: 'Login Failed', type: 'error' })
+
         localStorage.removeItem('access_token')
         router.push('/login')
       }
@@ -64,8 +70,7 @@ const Header = () => {
   }, [token])
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token') || ''
-    setToken(token)
+    setToken(cookies.access_token)
   }, [onFetching])
 
   return (

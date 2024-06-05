@@ -8,6 +8,7 @@ import { useStoreListBreadcrumbs } from '@/stores'
 import { Avatar, Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react'
 import { googleLogout } from '@react-oauth/google'
 import { useRouter } from 'next/navigation'
+import { setCookie } from 'nookies'
 import { useEffect, useState } from 'react'
 
 type TContentUser = {
@@ -29,13 +30,19 @@ const Header = () => {
     try {
       const dataUser: any = await instance.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`)
 
-      if (dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT || dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT1 || dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT2) {
+      if (dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT) {
         ToastComponent({ message: 'You are not authorized', type: 'error' })
         localStorage.removeItem('access_token')
         return router.push('/login')
+      } else {
+        setInfoUser(dataUser)
+        localStorage.setItem('access_token', token)
+        //set cookie
+        setCookie(null, 'access_token', token, {
+          maxAge: 86400,
+          path: '/'
+        })
       }
-
-      setInfoUser(dataUser)
     } catch (error) {
       if (error) {
         ToastComponent({ message: 'Login Failed', type: 'error' })
@@ -59,7 +66,7 @@ const Header = () => {
   useEffect(() => {
     const token = localStorage.getItem('access_token') || ''
     setToken(token)
-  }, [])
+  }, [onFetching])
 
   return (
     <div className='sticky top-0 z-50 flex items-center justify-between bg-white p-5'>

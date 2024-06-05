@@ -30,7 +30,7 @@ const Header = () => {
     try {
       const dataUser: any = await instance.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`)
 
-      if (dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT) {
+      if (dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT || dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT1 || dataUser.email !== process.env.NEXT_PUBLIC_ACCESS_ACCOUNT2) {
         ToastComponent({ message: 'You are not authorized', type: 'error' })
         localStorage.removeItem('access_token')
         return router.push('/login')

@@ -253,6 +253,9 @@ const DrawerDetails = ({ isOpen, setIsOpen, setOnFetching }: { isOpen: boolean; 
       views: storePost?.views
     }
 
+
+
+
     const newPayload = objectToFormData(payload)
 
     try {

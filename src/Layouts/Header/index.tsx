@@ -26,7 +26,7 @@ const Header = () => {
   const cookies = parseCookies()
   const router = useRouter()
 
-  const whitelist = [process.env.NEXT_PUBLIC_ACCESS_ACCOUNT as string, process.env.NEXT_PUBLIC_ACCESS_ACCOUNT_2 as string, process.env.NEXT_PUBLIC_ACCESS_ACCOUNT_3 as string]
+  const whitelist = [process.env.NEXT_PUBLIC_ACCESS_ACCOUNT as string, process.env.NEXT_PUBLIC_ACCESS_ACCOUNT2 as string, process.env.NEXT_PUBLIC_ACCESS_ACCOUNT3 as string]
   const handleFetchingUser = async () => {
     try {
       const dataUser: any = await instance.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`)

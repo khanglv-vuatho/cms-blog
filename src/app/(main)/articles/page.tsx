@@ -249,7 +249,7 @@ const DrawerDetails = ({ isOpen, setIsOpen, setOnFetching }: { isOpen: boolean; 
       categoryId: storePost?.category?.[0],
       description: storePost?.description.trim(),
       detail: storePost?.detail.trim(),
-      thumbnail: storePost.thumbnail.trim(),
+      thumbnail: storePost.thumbnail,
       views: storePost?.views
     }
 

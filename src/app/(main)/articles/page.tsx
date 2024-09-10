@@ -1,10 +1,10 @@
 'use client'
-
 import { Button, Chip, Select, SelectItem, SelectedItems, useDisclosure } from '@nextui-org/react'
 import { Editor } from '@tinymce/tinymce-react'
-import { ChangeEvent, RefObject, useCallback, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import DropDownMenu from '@/components/Dropdown'
+import ImageFallback from '@/components/ImageFallback'
 import InputCustom from '@/components/Input'
 import { DefaultModal } from '@/components/Modal'
 import SwitchDeleted from '@/components/SwitchDeleted'
@@ -13,9 +13,9 @@ import { ToastComponent } from '@/components/ToastComponent'
 import instance from '@/services/axiosConfig'
 import { useStoreListBreadcrumbs, useStorecurrentPost } from '@/stores'
 import { TCategory, TPosts, Tag } from '@/type'
-import { Add, Edit, Trash } from 'iconsax-react'
-import ImageFallback from '@/components/ImageFallback'
 import { objectToFormData } from '@/utils'
+import { Edit } from 'iconsax-react'
+import { Galada } from 'next/font/google'
 
 const Articles = () => {
   const [onFetching, setOnFetching] = useState(false)
@@ -49,7 +49,8 @@ const Articles = () => {
         slug: item.slug,
         thumbnail: item.thumbnail,
         detail: item.detail,
-        views: item.views
+        views: item.views,
+        popular: item?.popular ? item?.popular : false
       }))
 
       setPosts(transformdData)
@@ -59,8 +60,8 @@ const Articles = () => {
       setOnFetching(false)
     }
   }
-
-  const columns = [{ name: 'name' }, { name: 'description' }, { name: 'category' }, { name: 'tag' }, { name: 'views' }, { name: 'active' }, { name: 'actions' }]
+  
+  const columns = useMemo(() => [{ name: 'name' }, { name: 'description' }, { name: 'category' }, { name: 'tag' }, { name: 'views' }, { name: 'active' }, { name: 'popular' }, { name: 'actions' }], [])
 
   const handleDeleted = async (item: TPosts) => {
     try {
@@ -72,9 +73,18 @@ const Articles = () => {
     }
   }
 
+  const handleTogglePopular = async (item: TPosts) => {
+    try {
+      instance.put(`/v1/posts/${item.id}`, {
+        popular: !item?.popular
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleAction = (item: TPosts) => {
     setIsOpen(true)
-
     setCurrentPost(item)
   }
 
@@ -105,6 +115,8 @@ const Articles = () => {
     switch (columnKey) {
       case 'active':
         return <SwitchDeleted status={item.active} onChange={() => handleDeleted(item)} />
+      case 'popular':
+        return <SwitchDeleted status={item?.popular} onChange={() => handleTogglePopular(item)} />
       default:
         return cellValue
     }
@@ -197,11 +209,6 @@ const DrawerDetails = ({ isOpen, setIsOpen, setOnFetching }: { isOpen: boolean; 
   }
 
   const handleSubmit = async () => {
-    // const currentcate = { ...currentCategory, tags: currentCategory.tags.map((item: any) => item._id) }
-    // const areTagsEqual = JSON.stringify(category.tags) === JSON.stringify(currentcate.tags)
-
-    // if (category.title == currentCategory.title && areTagsEqual && category.active == currentCategory.active) return setIsOpen(false)
-
     try {
       const checkError = {
         title: storePost.title === '',
@@ -252,9 +259,6 @@ const DrawerDetails = ({ isOpen, setIsOpen, setOnFetching }: { isOpen: boolean; 
       thumbnail: storePost.thumbnail,
       views: storePost?.views
     }
-
-
-
 
     const newPayload = objectToFormData(payload)
 

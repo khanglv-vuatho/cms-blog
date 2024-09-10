@@ -23,6 +23,7 @@ export type TPosts = {
   thumbnail: string
   detail: string
   views: number
+  popular: boolean
 }
 
 export type TTagAndCategory = {

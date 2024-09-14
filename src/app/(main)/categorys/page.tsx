@@ -31,7 +31,7 @@ const Categorys = () => {
   const currentCategory = useStoreCurrentCategorys((state) => state.currentCategory)
   const setCurrentCategory = useStoreCurrentCategorys((state) => state.setCurrentCategory)
 
-  const columns = [{ name: 'title' }, { name: 'tags' }, { name: 'active' }, { name: 'actions' }]
+  const columns = [{ name: 'number' }, { name: 'title' }, { name: 'tags' }, { name: 'active' }, { name: 'actions' }]
 
   useEffect(() => {
     setList([{ title: 'Home', url: '/' }, { title: 'Categorys List' }])
@@ -68,7 +68,8 @@ const Categorys = () => {
         }
       })
 
-      const transformedArray: TCategory[] = data.map((item: any) => ({
+      const transformedArray: TCategory[] = data?.data?.map((item: any, index: number) => ({
+        number: `#${index + 1}`,
         slug: item?.slug,
         tags: item?.tags,
         title: item?.title,

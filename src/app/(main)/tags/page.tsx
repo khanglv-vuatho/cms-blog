@@ -30,7 +30,7 @@ const Tags = () => {
 
   const [tagValue, setTagValue] = useState('')
   const [tagData, setTagData] = useState<TItem[]>([])
-  const columns = [{ name: 'title' }, { name: 'active' }, { name: 'actions' }]
+  const columns = [{ name: 'number' }, { name: 'title' }, { name: 'active' }, { name: 'actions' }]
 
   useEffect(() => {
     setList([{ title: 'Home', url: '/' }, { title: 'Tags List' }])
@@ -53,7 +53,8 @@ const Tags = () => {
     try {
       const data: any = await instance.get('/v1/tags')
 
-      const transformedArray: TItem[] = data.map((item: any) => ({
+      const transformedArray: TItem[] = data?.data?.map((item: any, index: number) => ({
+        number: `#${index + 1}`,
         slug: item.slug,
         title: item.title,
         active: !item._destroy,

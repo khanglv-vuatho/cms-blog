@@ -15,7 +15,6 @@ import { useStoreListBreadcrumbs, useStorecurrentPost } from '@/stores'
 import { TCategory, TPosts, Tag } from '@/type'
 import { objectToFormData } from '@/utils'
 import { Edit } from 'iconsax-react'
-import { Galada } from 'next/font/google'
 
 const Articles = () => {
   const [onFetching, setOnFetching] = useState(false)
@@ -39,7 +38,7 @@ const Articles = () => {
         }
       })
 
-      const transformdData = data.map((item: any) => ({
+      const transformdData = data.data.map((item: any, index: number) => ({
         id: item._id,
         name: item.title,
         description: item.description,
@@ -50,7 +49,8 @@ const Articles = () => {
         thumbnail: item.thumbnail,
         detail: item.detail,
         views: item.views,
-        popular: item?.popular ? item?.popular : false
+        popular: item?.popular ? item?.popular : false,
+        number: `#${index + 1}`
       }))
 
       setPosts(transformdData)
@@ -60,8 +60,11 @@ const Articles = () => {
       setOnFetching(false)
     }
   }
-  
-  const columns = useMemo(() => [{ name: 'name' }, { name: 'description' }, { name: 'category' }, { name: 'tag' }, { name: 'views' }, { name: 'active' }, { name: 'popular' }, { name: 'actions' }], [])
+
+  const columns = useMemo(
+    () => [{ name: 'number' }, { name: 'name' }, { name: 'description' }, { name: 'category' }, { name: 'tag' }, { name: 'views' }, { name: 'active' }, { name: 'popular' }, { name: 'actions' }],
+    []
+  )
 
   const handleDeleted = async (item: TPosts) => {
     try {
@@ -135,8 +138,7 @@ const Articles = () => {
   }, [setList])
 
   return (
-    <div className='flex flex-col gap-2 p-10'>
-      <h1 className='mb-4 text-2xl font-bold'>Articles List</h1>
+    <div className='flex flex-col gap-2 px-10 py-4'>
       <Table
         renderCell={renderCell}
         onDelete={(item) => {
